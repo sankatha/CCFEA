@@ -15,20 +15,14 @@ public class Output {
     Specialist outputSpecialist;
     ASMModelParams asmModelParams;
     long runTime = System.currentTimeMillis();
-
     Date today = new Date(this.runTime);
-
     String timeString = new String(this.today.toString());
-
 
     public int currentTime;
 
-
     String outputFile;
 
-
     String paramFileName;
-
 
     FileWriter fw;
 
@@ -43,7 +37,6 @@ public class Output {
     PrintWriter salida2;
 
     public LinkedList agentList = new LinkedList();
-
 
     public Object createEnd() {
         this.asmModelParams = new ASMModelParams();
@@ -228,9 +221,3 @@ public class Output {
         }
     }
 }
-
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\Output.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */

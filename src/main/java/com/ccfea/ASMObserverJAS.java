@@ -21,7 +21,6 @@ public class ASMObserverJAS extends SimModel {
     private CrossSection.Double agentsWealth;
     private CrossSection.Double agentsPosition;
 
-
     public static void main(String[] args) {
         SimEngine eng = new SimEngine();
         JAS jas = new JAS(eng);
@@ -35,7 +34,6 @@ public class ASMObserverJAS extends SimModel {
         eng.addModel(o);
         o.setParameters();
     }
-
 
     public void setParameters() {
         this.asmModel = new ASMModelJas();
@@ -121,8 +119,3 @@ public class ASMObserverJAS extends SimModel {
         this.eventList.scheduleSimple(0L, 1, this.agentWealthBarPlot, 10003);
     }
 }
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\ASMObserverJAS.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */

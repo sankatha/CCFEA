@@ -29,7 +29,6 @@ public class MovingAverage {
         return this;
     }
 
-
     public Object initWidth$Value(int w, double val) {
         this.width = w;
         this.maInputs = new double[w];
@@ -86,8 +85,3 @@ public class MovingAverage {
         this.expWMA = (this.aweight * this.expWMA + this.bweight * x);
     }
 }
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\MovingAverage.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */

@@ -3,7 +3,6 @@ package com.ccfea;
 import jas.engine.Sim;
 import jas.statistics.IDoubleSource;
 import org._3pq.jgrapht.Graph;
-
 import java.util.LinkedList;
 
 public class BFagent extends Agent implements IDoubleSource {
@@ -971,8 +970,3 @@ public class BFagent extends Agent implements IDoubleSource {
         throw new UnsupportedOperationException("Bad argument");
     }
 }
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\BFagent.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */

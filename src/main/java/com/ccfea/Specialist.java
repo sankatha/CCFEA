@@ -92,11 +92,8 @@ public class Specialist {
         double offertotal = 0.0D;
         double bidtotal = 0.0D;
 
-
         LinkedList index = new LinkedList();
-
         volume = 0.0D;
-
 
         double dividend = worldForSpec.getDividend();
 
@@ -104,8 +101,6 @@ public class Specialist {
         for (boolean done = false; (mcount < this.maxiterations) && (!done); mcount++) {
 
             switch (this.sptype) {
-
-
                 case 0:
                     trialprice = this.rea * dividend + this.reb;
                     done = true;
@@ -114,8 +109,6 @@ public class Specialist {
                 case 1:
                     if (mcount == 0) {
                         trialprice = worldForSpec.getPrice();
-
-
                     } else {
 
                         double imbalance = bidtotal - offertotal;
@@ -131,7 +124,6 @@ public class Specialist {
                     }
                     break;
 
-
                 case 2:
                     if (mcount == 0) {
                         trialprice = worldForSpec.getPrice();
@@ -140,12 +132,13 @@ public class Specialist {
                                 this.eta * (bidtotal - offertotal));
                         done = true;
                     }
-
                     break;
             }
 
-            if (trialprice < this.minprice)
+            if (trialprice < this.minprice) {
                 trialprice = this.minprice;
+            }
+
             if (trialprice > this.maxprice) {
                 trialprice = this.maxprice;
             }
@@ -154,6 +147,7 @@ public class Specialist {
             offertotal = 0.0D;
             slopetotal = 0.0D;
             index = agentList;
+
             for (int i = 0; i < index.size(); i++) {
                 Agent agent = (Agent) index.get(i);
                 double slope = 0.0D;
@@ -166,7 +160,6 @@ public class Specialist {
                 }
             }
 
-
             volume = bidtotal > offertotal ? offertotal : bidtotal;
             this.bidfrac = (bidtotal > 0.0D ? volume / bidtotal : 0.0D);
             this.offerfrac = (offertotal > 0.0D ? volume / offertotal : 0.0D);
@@ -175,25 +168,20 @@ public class Specialist {
         return trialprice;
     }
 
-
     public double getVolume() {
         return volume;
     }
-
 
     public Object completeTrades$Market(LinkedList agentList, World worldForSpec) {
         LinkedList index = new LinkedList();
 
         double price = 0.0D;
-
         price = worldForSpec.getPrice();
         double profitperunit = worldForSpec.getProfitPerUnit();
-
 
         double bfp = this.bidfrac * price;
         double ofp = this.offerfrac * price;
         double tp = this.taupnew * profitperunit;
-
 
         index = agentList;
 
@@ -201,7 +189,6 @@ public class Specialist {
             Agent agent = (Agent) index.get(i);
 
             agent.profit = (this.taupdecay * agent.profit + tp * agent.position);
-
 
             if (agent.demand > 0.0D) {
                 agent.position += agent.demand * this.bidfrac;
@@ -215,9 +202,3 @@ public class Specialist {
         return this;
     }
 }
-
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\Specialist.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */

@@ -72,9 +72,3 @@ public class Dividend {
         return this.dvdnd;
     }
 }
-
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\Dividend.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */

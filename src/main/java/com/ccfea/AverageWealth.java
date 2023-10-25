@@ -13,7 +13,6 @@ public class AverageWealth {
         return this;
     }
 
-
     public double averageWealth() {
         int average = 0;
 
@@ -25,8 +24,3 @@ public class AverageWealth {
         return average / this.NumAgents;
     }
 }
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\AverageWealth.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */

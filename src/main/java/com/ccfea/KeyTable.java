@@ -9,9 +9,3 @@ public class KeyTable {
         this.value = d;
     }
 }
-
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\KeyTable.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */

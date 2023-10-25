@@ -1,7 +1,6 @@
 package com.ccfea;
 
 import jas.engine.Sim;
-
 import java.util.LinkedList;
 
 public class World {
@@ -155,11 +154,9 @@ public class World {
         NWORLDBITS = bitnameList.size();
     }
 
-
     public int irand(int x) {
         return Sim.getRnd().getIntFromTo(0, x - 1);
     }
-
 
     public double GETMA(MovingAverage[] x, int j) {
         return this.exponentialMAs ? x[j].getEWMA() : x[j].getMA();
@@ -171,7 +168,6 @@ public class World {
         return 0;
     }
 
-
     public static String descriptionOfBit(int n) {
         if (n == -1)
             return "(Unused bit for spacing)";
@@ -180,7 +176,6 @@ public class World {
         return ((BitName) bitnameList.get(n)).description;
     }
 
-
     public static String nameOfBit(int n) {
         if (n == -1)
             return "null";
@@ -188,7 +183,6 @@ public class World {
             return "";
         return ((BitName) bitnameList.get(n)).name;
     }
-
 
     public static int bitNumberOf(String name) {
         int n;
@@ -201,23 +195,19 @@ public class World {
         return n;
     }
 
-
     public Object setintrate(double rate) {
         this.intrate = rate;
         return this;
     }
-
 
     public Object setExponentialMAs(boolean aBool) {
         this.exponentialMAs = aBool;
         return this;
     }
 
-
     public int getNumWorldBits() {
         return this.nworldbits;
     }
-
 
     public Object initWithBaseline(double baseline) {
         if (nameOfBit(42).compareTo("pup") != 0) {
@@ -232,11 +222,8 @@ public class World {
         this.savedprice = (price = initprice);
         setPrice(initprice);
 
-
         this.returnratio = this.intrate;
         this.profitperunit = 0.0D;
-
-
         this.nworldbits = NWORLDBITS;
 
         this.malength[0] = 5;
@@ -249,9 +236,7 @@ public class World {
 
         this.divhistory = new double['Ǵ'];
         this.pricehistory = new double['Ǵ'];
-
         this.realworld = new int[NWORLDBITS];
-
 
         for (int i = 0; i < 5; i++) {
             this.pupdown[i] = 0;
@@ -281,9 +266,7 @@ public class World {
             this.olddivMA[i].initWidth$Value(this.malength[i], initdividend);
         }
 
-
         makebitvector();
-
         return this;
     }
 
@@ -311,11 +294,9 @@ public class World {
         return price;
     }
 
-
     public double getProfitPerUnit() {
         return this.profitperunit;
     }
-
 
     public Object setDividend(double d) {
         if (this.dividend != this.saveddividend) {
@@ -330,7 +311,6 @@ public class World {
         return this;
     }
 
-
     public double getDividend() {
         return this.dividend;
     }
@@ -342,11 +322,9 @@ public class World {
         return this;
     }
 
-
     public double getAverageWealth() {
         return AverageWealth;
     }
-
 
     public double getRiskNeutral() {
         return riskNeutral;
@@ -356,15 +334,11 @@ public class World {
         return rationalExpectations;
     }
 
-
     public Object updateWorld() {
         this.updown_top = ((this.updown_top + 1) % 5);
         this.pupdown[this.updown_top] = ChangeBooleanToInt(price > this.oldprice);
         this.dupdown[this.updown_top] = ChangeBooleanToInt(this.dividend > this.olddividend);
-
-
         this.history_top = (this.history_top + 1 + 500);
-
 
         for (int i = 0; i < 4; i++) {
             int rago = (this.history_top - this.malength[i]) % 500;
@@ -376,17 +350,13 @@ public class World {
             this.olddivMA[i].addValue(this.divhistory[rago]);
         }
 
-
         this.history_top %= 500;
         this.pricehistory[this.history_top] = price;
         this.divhistory[this.history_top] = this.dividend;
 
-
         makebitvector();
-
         return this;
     }
-
 
     private Object makebitvector() {
         int i = 0;
@@ -394,7 +364,6 @@ public class World {
         this.realworld[(i++)] = 1;
         this.realworld[(i++)] = 0;
         this.realworld[(i++)] = irand(2);
-
 
         int temp = this.updown_top + 5;
         for (int j = 0; j < 5; temp--) {
@@ -416,12 +385,10 @@ public class World {
             }
         }
 
-
         double multiple = this.dividend / this.dividendscale;
         for (int j = 0; j < NRATIOS; j++) {
             this.realworld[(i++)] = ChangeBooleanToInt(multiple > ratios[j]);
         }
-
 
         multiple = price * this.intrate / this.olddividend;
         for (int j = 0; j < NRATIOS; j++) {
@@ -438,34 +405,31 @@ public class World {
             this.realworld[(i++)] = ChangeBooleanToInt(GETMA(this.priceMA, j) > GETMA(this.oldpriceMA, j));
         }
 
-
         for (int j = 0; j < 4; j++) {
             this.realworld[(i++)] = ChangeBooleanToInt(price > GETMA(this.priceMA, j));
         }
-
 
         for (int j = 0; j < 3; j++) {
             for (int k = j + 1; k < 4; k++) {
                 this.realworld[(i++)] = ChangeBooleanToInt(GETMA(this.priceMA, j) > GETMA(this.priceMA, k));
             }
         }
+
         if (i != NWORLDBITS) {
             System.out.println("Bits calculated != bits defined.");
         }
 
-
         for (i = 0; i < NWORLDBITS; i++) {
             this.realworld[i] = (2 - this.realworld[i]);
         }
+
         return this;
     }
-
 
     public Object getRealWorld(int[] anArray) {
         System.arraycopy(this.realworld, 0, anArray, 0, NWORLDBITS);
         return this;
     }
-
 
     public int pricetrend(int n) {
         int trend;
@@ -482,7 +446,6 @@ public class World {
         }
         return 0;
     }
-
 
     public Object setRea$Reb(double rea1, double reb1) {
         this.rea = rea1;

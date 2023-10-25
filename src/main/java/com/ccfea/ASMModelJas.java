@@ -110,11 +110,9 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
     public void buildModel() {
         this.modelTime = 0;
 
-
         this.asmModelParams = new ASMModelParams();
 
         Sim.getRnd().setSeed(ASMModelParams.randomSeed);
-
 
         this.dividendProcess = new Dividend();
         this.dividendProcess.initNormal();
@@ -125,15 +123,18 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         this.dividendProcess.setPeriod(ASMModelParams.period);
         this.dividendProcess.setDerivedParams();
 
-
         this.world.createBitnameList();
         this.world.setintrate(ASMModelParams.intrate);
-        if (ASMModelParams.exponentialMAs == 1) this.world.setExponentialMAs(true);
-        else
+
+        if (ASMModelParams.exponentialMAs == 1) {
+            this.world.setExponentialMAs(true);
+        }
+        else {
             this.world.setExponentialMAs(false);
+        }
+
         this.world.initWithBaseline(ASMModelParams.baseline);
         this.world.setRea$Reb(ASMModelParams.rea, ASMModelParams.reb);
-
 
         this.specialist.setMaxPrice(ASMModelParams.maxprice);
         this.specialist.setMinPrice(ASMModelParams.minprice);
@@ -145,23 +146,18 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         this.specialist.setREA(ASMModelParams.rea);
         this.specialist.setREB(ASMModelParams.reb);
 
-
         this.output = new Output();
 
         this.output.setWorld(this.world);
         this.output.setSpecialist(this.specialist);
 
-
         BFagent.init();
         BFagent.setBFParameterObject(this.bfParams);
         BFagent.setWorld(this.world);
 
-
         this.graph = new DirectedWeightedMultigraph();
 
-
         for (int i = 0; i < ASMModelParams.numBFagents; i++) {
-
             BFagent agent = new BFagent(this.graph);
             agent.setID(i);
             agent.setLabel(i + "");
@@ -175,7 +171,6 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
             agentList.add(agent);
         }
 
-
         this.averageWealth = new AverageWealth();
         this.averageWealth.InitList(agentList, ASMModelParams.numBFagents);
 
@@ -184,26 +179,20 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         }
 
         new RegularCircleLayout(this.graph, new Dimension(500, 500)).init();
-
-
         this.graphViewer = new GraphViewer();
         this.graphViewer.setMinMaxWeightValue(0.0D, 10.0D);
         this.graphViewer.setDrawNodeLabel(true);
         this.graphViewer.setGraph(this.graph, new Dimension(500, 500));
 
         addSimWindow(this.graphViewer);
-
-
         buildAction();
     }
-
 
     public Object writeParams() {
         if ((this.asmModelParams != null) && (this.bfParams != null))
             this.output.writeParams$BFAgent$Time(this.asmModelParams, this.bfParams, this.modelTime);
         return this;
     }
-
 
     public void buildAction() {
         SimGroupEvent periodActions = this.eventList.scheduleGroup(0L, 1);
@@ -221,13 +210,10 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
             this.eventList.scheduleSimple(ASMModelParams.numOfIterations - 1000, 1, this, "printResultsAgentWealth");
         }
 
-
         this.eventList.scheduleSimple(0L, 1, this, "agentColor");
         this.eventList.scheduleSimple(0L, 1, this.graphViewer, 10003);
-
         this.eventList.scheduleSystem(ASMModelParams.numOfIterations, 10000);
     }
-
 
     public Object doWarmupStep() {
         double div = this.dividendProcess.dividend();
@@ -237,16 +223,12 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         return this;
     }
 
-
     public Object periodStepDividend() {
         this.modelTime += 1;
         this.world.setDividend(this.dividendProcess.dividend());
-
         this.world.setAverageWealth(this.averageWealth.averageWealth());
-
         return this;
     }
-
 
     public Object periodStepPrice() {
         this.world.setPrice(this.specialist.performTrading$Market(agentList, this.world));
@@ -263,11 +245,9 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
                 "  " + this.world.getRiskNeutral() + "  " + this.specialist.getVolume());
     }
 
-
     public void printBatch() {
         System.out.println("Step... " + Sim.getAbsoluteTime());
     }
-
 
     public double getDoubleValue(int valueId) {
         switch (valueId) {
@@ -285,7 +265,6 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         throw new UnsupportedOperationException("Bad argument");
     }
 
-
     public void printResultsPrice() {
         try {
             this.out = new BufferedWriter(new FileWriter("Price.txt", true));
@@ -297,7 +276,6 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         } catch (IOException localIOException) {
         }
     }
-
 
     public void printResultsAgentWealth() {
         try {
@@ -313,7 +291,6 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         } catch (IOException localIOException) {
         }
     }
-
 
     public void agentColor() {
         for (int i = 0; i < ASMModelParams.numBFagents; i++) {

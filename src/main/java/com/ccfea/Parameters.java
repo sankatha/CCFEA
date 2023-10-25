@@ -10,7 +10,6 @@ public class Parameters {
         this.bfParams = new BFParams();
     }
 
-
     public Object init() {
         this.bfParams.init();
         return this;
@@ -33,9 +32,3 @@ public class Parameters {
         return this;
     }
 }
-
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\Parameters.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */

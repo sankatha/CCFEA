@@ -217,8 +217,3 @@ public class BFParams {
     BFParams(boolean a) {
     }
 }
-
-/* Location:              M:\pc\downloads\sCCFEA-ASM_beta1.jar!\BFParams.class
- * Java compiler version: 5 (49.0)
- * JD-Core Version:       0.7.1
- */
