@@ -23,7 +23,9 @@
 hs_err_pid*
 replay_pid*
 
+# Enviorenement and generated
 .DS_Store
 .idea/*
 .idea
 target
+dependency-reduced-pom.xml
