@@ -3,24 +3,25 @@ package com.ccfea;
 import java.util.LinkedList;
 
 public class AverageWealth {
-    LinkedList agentList;
-    int NumAgents;
 
-    public Object InitList(LinkedList list, int numAgents) {
-        this.agentList = list;
-        this.NumAgents = numAgents;
+   LinkedList agentList;
+   int NumAgents;
 
-        return this;
-    }
 
-    public double averageWealth() {
-        int average = 0;
+   public Object InitList(LinkedList list, int numAgents) {
+      this.agentList = list;
+      this.NumAgents = numAgents;
+      return this;
+   }
 
-        for (int i = 0; i < this.NumAgents; i++) {
-            BFagent agent = (BFagent) this.agentList.get(i);
-            average = (int) (average + agent.getWealth());
-        }
+   public double averageWealth() {
+      int average = 0;
 
-        return average / this.NumAgents;
-    }
+      for(int i = 0; i < this.NumAgents; ++i) {
+         BFagent agent = (BFagent)this.agentList.get(i);
+         average = (int)((double)average + agent.getWealth());
+      }
+
+      return (double)(average / this.NumAgents);
+   }
 }
