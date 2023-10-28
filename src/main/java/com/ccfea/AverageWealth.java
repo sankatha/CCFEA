@@ -1,30 +1,27 @@
-/**
- * Decompiled code from lib/sCCFEA-ASM_beta1.jar using https://the.bytecode.club/fernflower.jar
- */
 package com.ccfea;
 
 import java.util.LinkedList;
 
 public class AverageWealth {
 
-   LinkedList agentList;
-   int NumAgents;
+    LinkedList agentList;
+    int NumAgents;
 
 
-   public Object InitList(LinkedList list, int numAgents) {
-      this.agentList = list;
-      this.NumAgents = numAgents;
-      return this;
-   }
+    public Object InitList(LinkedList list, int numAgents) {
+        this.agentList = list;
+        this.NumAgents = numAgents;
+        return this;
+    }
 
-   public double averageWealth() {
-      int average = 0;
+    public double averageWealth() {
+        int average = 0;
 
-      for(int i = 0; i < this.NumAgents; ++i) {
-         BFagent agent = (BFagent)this.agentList.get(i);
-         average = (int)((double)average + agent.getWealth());
-      }
+        for (int i = 0; i < this.NumAgents; ++i) {
+            BFagent agent = (BFagent) this.agentList.get(i);
+            average = (int) ((double) average + agent.getWealth());
+        }
 
-      return (double)(average / this.NumAgents);
-   }
+        return (double) (average / this.NumAgents);
+    }
 }
