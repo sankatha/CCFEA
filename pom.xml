@@ -83,7 +83,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.ccfea.ASMObserverJAS</mainClass>
+                                    <mainClass>com.ccfea.StartASM</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
