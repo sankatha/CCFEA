@@ -32,7 +32,7 @@
                     <artifactId>jas-library</artifactId>
                     <version>${jas.library.version}</version>
                     <packaging>jar</packaging>
-                    <file>${project.basedir}/lib/JAS-1.2.1.jar</file>
+                    <file>${project.basedir}/lib/sJAS.jar</file>
                     <generatePom>true</generatePom>
                 </configuration>
                 <executions>
