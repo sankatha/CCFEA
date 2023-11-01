@@ -7,9 +7,8 @@ public class Parameters {
     int run;
 
 
-    public Object init() {
+    public void init() {
         this.bfParams.init();
-        return this;
     }
 
     public ASMModelParams getModelParams() {
@@ -24,8 +23,7 @@ public class Parameters {
         return this.run;
     }
 
-    public Object sayHello() {
+    public void sayHello() {
         System.out.println("Lo que hacemos en vida se refleja en la eternidad");
-        return this;
     }
 }

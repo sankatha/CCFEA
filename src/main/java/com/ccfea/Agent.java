@@ -66,7 +66,7 @@ public class Agent extends RelationalAgent {
         this.dividend = worldForAgent.getDividend();
     }
 
-    public Object creditEarningsAndPayTaxes() {
+    public void creditEarningsAndPayTaxes() {
         this.getPriceFromWorld();
         this.getDividendFromWorld();
         this.cash -= (this.price * this.intrate - this.dividend) * this.position;
@@ -75,7 +75,6 @@ public class Agent extends RelationalAgent {
         }
 
         this.wealth = this.cash + this.price * this.position;
-        return this;
     }
 
     public void constrainDemand(double slope, double trialprice) {

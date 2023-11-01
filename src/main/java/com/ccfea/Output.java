@@ -36,7 +36,7 @@ public class Output {
         this.agentList = new LinkedList<>();
     }
 
-    public Object createEnd() {
+    public void createEnd() {
         this.asmModelParams = new ASMModelParams();
         this.dataFileExists = false;
         this.timeString = this.timeString.replace(':', '_');
@@ -49,7 +49,6 @@ public class Output {
 
         this.paramFileName = this.paramFileName.concat(this.timeString);
         this.paramFileName = this.paramFileName.concat(".scm");
-        return this;
     }
 
     public void setSpecialist(Specialist theSpec) {
@@ -147,7 +146,7 @@ public class Output {
         }
     }
 
-    public Object prepareOutputFile() {
+    public void prepareOutputFile() {
         if (!this.dataFileExists) {
             this.outputFile = "output.data";
             this.outputFile = this.outputFile.concat(this.timeString);
@@ -163,11 +162,9 @@ public class Output {
 
             this.dataFileExists = true;
         }
-
-        return this;
     }
 
-    public Object writeData(LinkedList list) {
+    public void writeData(LinkedList list) {
         long t = ((int) Sim.getAbsoluteTime());
 
         try {
@@ -177,7 +174,6 @@ public class Output {
             this.salida2.print("\t");
             this.salida2.print((float) this.outputWorld.getDividend());
             this.salida2.print("\t");
-            this.salida2.print((float) this.outputSpecialist.getVolume());
             this.salida2.print("\t");
             this.agentList = list;
 
@@ -191,8 +187,6 @@ public class Output {
         } catch (Exception var9) {
             System.err.println("Exception dataOutputFile.writeChars: " + var9.getMessage());
         }
-
-        return this;
     }
 
     public void drop() {

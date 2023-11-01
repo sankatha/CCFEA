@@ -11,7 +11,7 @@ public class MovingAverage {
     double aweight;
     double bweight;
 
-    public Object initWidth(int w) {
+    public void initWidth(int w) {
         this.width = w;
         this.maInputs = new double[w];
 
@@ -25,7 +25,6 @@ public class MovingAverage {
         this.uncorrectedSum = 0.0D;
         this.bweight = 1.0D - Math.exp(-1.0D / (double) w);
         this.aweight = 1.0D - this.bweight;
-        return this;
     }
 
     public void initWidth$Value(int w, double val) {

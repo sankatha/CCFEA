@@ -143,7 +143,7 @@ public class Specialist {
         return volume;
     }
 
-    public Object completeTrades$Market(LinkedList<BitName> agentList, World worldForSpec) {
+    public void completeTrades$Market(LinkedList<BitName> agentList, World worldForSpec) {
         double price = 0.0D;
         price = worldForSpec.getPrice();
         double profitperunit = worldForSpec.getProfitPerUnit();
@@ -163,7 +163,5 @@ public class Specialist {
                 agent.cash -= agent.demand * ofp;
             }
         }
-
-        return this;
     }
 }

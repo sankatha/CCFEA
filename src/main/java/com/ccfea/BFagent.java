@@ -58,7 +58,7 @@ public class BFagent extends Agent implements IDoubleSource {
         BFCast.init();
     }
 
-    public Object initForecasts() {
+    public void initForecasts() {
         int sumspecificity = 0;
         this.privateParams = params.copy();
         int numfcasts = BFParams.numfcasts;
@@ -85,10 +85,9 @@ public class BFagent extends Agent implements IDoubleSource {
         }
 
         this.avspecificity = (double) sumspecificity / (double) numfcasts;
-        return this;
     }
 
-    public Object initForecasts2() {
+    public void initForecasts2() {
         int sumspecificity = 0;
         this.privateParams = new BFParams();
         this.privateParams.init();
@@ -116,7 +115,6 @@ public class BFagent extends Agent implements IDoubleSource {
         }
 
         this.avspecificity = (double) sumspecificity / (double) numfcasts;
-        return this;
     }
 
     public BFCast createNewForecast() {
@@ -157,10 +155,9 @@ public class BFagent extends Agent implements IDoubleSource {
                 fcastObject.updateSpecfactor();
             }
         }
-
     }
 
-    public Object prepareForTrading2() {
+    public void prepareForTrading2() {
         double forecastvar = 0.0D;
         BitVector myworld = new BitVector();
         myworld.setCondwords(BFParams.condwords);
@@ -235,7 +232,6 @@ public class BFagent extends Agent implements IDoubleSource {
         }
 
         this.divisor = BFParams.lambda * forecastvar;
-        return this;
     }
 
     public BitVector collectWorldData2() {
@@ -381,7 +377,7 @@ public class BFagent extends Agent implements IDoubleSource {
         return this.forecast;
     }
 
-    public Object updatePerformance2() {
+    public void updatePerformance2() {
         double tauv = BFParams.tauv;
         double a = 1.0D / tauv;
         double b = 1.0D - a;
@@ -437,8 +433,6 @@ public class BFagent extends Agent implements IDoubleSource {
                 aForecast.setStrength(BFParams.maxdev - aForecast.getVariance() + aForecast.getSpecfactor());
             }
         }
-
-        return this;
     }
 
     public double getDeviation() {
@@ -465,7 +459,7 @@ public class BFagent extends Agent implements IDoubleSource {
         return this.lastgatime;
     }
 
-    public Object performGA() {
+    public void performGA() {
         double madv = 0.0D;
         double meanv = 0.0D;
         LinkedList newList = new LinkedList();
@@ -576,7 +570,6 @@ public class BFagent extends Agent implements IDoubleSource {
 
         this.avspecificity = (double) var31 / (double) BFParams.numfcasts;
         newList.clear();
-        return this;
     }
 
     public BFCast CopyRule$From(BFCast to, BFCast from) {
