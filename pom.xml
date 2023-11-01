@@ -7,13 +7,27 @@
     <version>1.0</version>
 
     <properties>
+        <apache.commons-csv>1.10.0</apache.commons-csv>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <sl4j.version>2.0.9</sl4j.version>
         <jas.library.version>1.2.1</jas.library.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${sl4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>${apache.commons-csv}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.ccfea</groupId>
             <artifactId>jas-library</artifactId>
