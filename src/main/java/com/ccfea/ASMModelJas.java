@@ -214,7 +214,10 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         this.eventList.scheduleSimple(0L, 1, this, "completeTrades$Market");
         periodActions.addCollectionEvent(agentList, BFagent.class, "updatePerformance2");
         if (ASMModelParams.batch) {
-            this.eventList.scheduleSimple(0L, 1, this, "saveData");
+            // Collect.
+            this.eventList.scheduleSimple(0L, 1, this, "appendData");
+            // Batch.
+            this.eventList.scheduleSimple(0L, 1000, this, "saveData");
         }
         this.eventList.scheduleSimple(0L, 1, this, "agentColor");
         this.eventList.scheduleSimple(0L, 1, this.graphViewer, 10003);
@@ -299,7 +302,7 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
     /**
      * Save model data.
      */
-    public void saveData() {
+    public void appendData() {
         try {
             final List<String> tradeDataRow = Arrays.asList(
                     String.valueOf(this.modelTime),
@@ -323,6 +326,11 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         } catch (IndexOutOfBoundsException exp) {
             LOGGER.error("Failed to get agent object {}", exp.getLocalizedMessage());
         }
+    }
+
+    public void saveData() {
+        tradeDataFileService.saveToFile();
+        agentDataFileService.saveToFile();
     }
 
     private void addDownloadDataMenu() {

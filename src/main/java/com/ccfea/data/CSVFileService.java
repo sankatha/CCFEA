@@ -12,12 +12,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CSVFileService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CSVFileService.class);
     private final String csvFile;
+    private final List<List<String>> dataBuffer;
 
     public CSVFileService(List<String> headers, String csvFile) throws IOException {
+        this.dataBuffer = new CopyOnWriteArrayList<>();
         this.csvFile = csvFile;
         final Path tmpFilePath = getCSVFilePath();
         LOGGER.info("File path for {} {}", csvFile, tmpFilePath);
@@ -37,14 +40,21 @@ public class CSVFileService {
     }
 
     public void appendToFile(List<String> csvRowValues) {
+        dataBuffer.add(csvRowValues);
+    }
+
+    public void saveToFile() {
         try (
                 final BufferedWriter writer = Files.newBufferedWriter(getCSVFilePath(), StandardOpenOption.APPEND);
                 final CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL.builder().build());
         ) {
-            try {
-                csvPrinter.printRecord(csvRowValues);
-            } catch (IOException exp) {
-                LOGGER.error("Error writing row", exp);
+            for (List<String> dataRow: dataBuffer) {
+                try {
+                    csvPrinter.printRecord(dataRow);
+                    dataBuffer.remove(dataRow);
+                } catch (IOException exp) {
+                    LOGGER.error("Error writing row", exp);
+                }
             }
             csvPrinter.flush();
         } catch (IOException exp) {
