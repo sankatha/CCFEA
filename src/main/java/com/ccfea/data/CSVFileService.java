@@ -52,7 +52,7 @@ public class CSVFileService {
         }
     }
 
-    private Path getCSVFilePath() {
+    public Path getCSVFilePath() {
         return Paths.get(System.getProperty("java.io.tmpdir"), this.csvFile);
     }
 }

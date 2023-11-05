@@ -6,6 +6,8 @@ package com.ccfea;
 import com.ccfea.data.CSVFileService;
 import jas.engine.Sim;
 import jas.engine.SimModel;
+import jas.engine.gui.IWindowManager;
+import jas.engine.gui.SimWindow;
 import jas.events.SimGroupEvent;
 import jas.graph.GraphViewer;
 import jas.graph.layout.RegularCircleLayout;
@@ -15,16 +17,13 @@ import org._3pq.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Color;
-import java.awt.Dimension;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.*;
 
 public class ASMModelJas extends SimModel implements IDoubleSource {
     private static Logger LOGGER = LoggerFactory.getLogger(ASMModelJas.class);
@@ -70,6 +69,9 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         } catch (IOException exp) {
             LOGGER.error("Error creating data files", exp);
         }
+
+        // Add menu item to download data.
+        addDownloadDataMenu();
     }
 
     public void setParameters() {
@@ -212,11 +214,8 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         this.eventList.scheduleSimple(0L, 1, this, "completeTrades$Market");
         periodActions.addCollectionEvent(agentList, BFagent.class, "updatePerformance2");
         if (ASMModelParams.batch) {
-            // this.eventList.scheduleSimple((long)(ASMModelParams.numOfIterations - 10000), 1, this, "printResultsPrice");
-            // this.eventList.scheduleSimple((long)(ASMModelParams.numOfIterations - 1000), 1, this, "printResultsAgentWealth");
             this.eventList.scheduleSimple(0L, 1, this, "saveData");
         }
-
         this.eventList.scheduleSimple(0L, 1, this, "agentColor");
         this.eventList.scheduleSimple(0L, 1, this.graphViewer, 10003);
         this.eventList.scheduleSystem((long) ASMModelParams.numOfIterations, 10000);
@@ -272,37 +271,6 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         }
     }
 
-    public void printResultsPrice() {
-        try {
-            this.out = new BufferedWriter(new FileWriter("Price.txt", true));
-            this.out.write("\n" + Sim.getAbsoluteTime() + "\t");
-            this.out.write(this.world.getPrice() + "\t");
-            this.out.write(this.world.getRationalExpectations() + "\t");
-            this.out.write(this.world.getRiskNeutral() + "\t");
-            this.out.close();
-        } catch (IOException var2) {
-            ;
-        }
-
-    }
-
-    public void printResultsAgentWealth() {
-        try {
-            this.out = new BufferedWriter(new FileWriter("AgentWealth.txt", true));
-            this.out.write("\n" + Sim.getAbsoluteTime() + "\t");
-
-            for (int i = 0; i < ASMModelParams.numBFagents; ++i) {
-                BFagent agent = (BFagent) agentList.get(i);
-                this.out.write(agent.getWealth() + "\t");
-            }
-
-            this.out.close();
-        } catch (IOException var3) {
-            ;
-        }
-
-    }
-
     public void agentColor() {
         for (int i = 0; i < ASMModelParams.numBFagents; ++i) {
             BFagent agent = (BFagent) agentList.get(i);
@@ -354,6 +322,72 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
             agentDataFileService.appendToFile(agentDataRow);
         } catch (IndexOutOfBoundsException exp) {
             LOGGER.error("Failed to get agent object {}", exp.getLocalizedMessage());
+        }
+    }
+
+    private void addDownloadDataMenu() {
+        final IWindowManager windowManager = Sim.engine.getWindowManager();
+        final SimWindow[] simWindows = windowManager.getSimWindows();
+
+        for (SimWindow simWindow : simWindows) {
+            if (simWindow.getKey().equals("Model Parameters")) {
+                try {
+                    final Component[] components = simWindow.getWindow().getComponents();
+
+                    for (Component component : components) {
+                        if (component instanceof JRootPane) {
+                            final JRootPane rootPane = (JRootPane) component;
+                            final JMenuBar menuBar = Optional.ofNullable(rootPane.getJMenuBar()).orElse(new JMenuBar());
+                            final JMenu fileMenu = new JMenu("Simulator Data");
+                            menuBar.add(fileMenu);
+
+                            final JMenuItem menuItemDownloadTrade = new JMenuItem("Download Trade Data");
+                            final JMenuItem menuItemDownloadAgent = new JMenuItem("Download Agent Data");
+
+                            fileMenu.add(menuItemDownloadTrade);
+                            fileMenu.add(menuItemDownloadAgent);
+                            rootPane.setJMenuBar(menuBar);
+
+                            menuItemDownloadTrade.addActionListener(ev -> {
+                                final FileDialog destinationDialog = new FileDialog(new Frame("Save trade data file to destination"), "Save trade data file to destination", FileDialog.SAVE);
+                                destinationDialog.setFile(TRADE_DATA_FILE);
+                                destinationDialog.setVisible(true);
+
+                                final String sourceFilePath = tradeDataFileService.getCSVFilePath().toString();
+                                final String destinationFilePath = destinationDialog.getDirectory() + destinationDialog.getFile();
+                                copyFile(sourceFilePath, destinationFilePath);
+                            });
+
+                            menuItemDownloadAgent.addActionListener(ev -> {
+                                final FileDialog destinationDialog = new FileDialog(new Frame("Save agent data file to destination"), "Save trade data file to destination", FileDialog.SAVE);
+                                destinationDialog.setFile(AGENT_DATA_FILE);
+                                destinationDialog.setVisible(true);
+
+                                final String sourceFilePath = agentDataFileService.getCSVFilePath().toString();
+                                final String destinationFilePath = destinationDialog.getDirectory() + destinationDialog.getFile();
+                                copyFile(sourceFilePath, destinationFilePath);
+                            });
+
+                            break;
+                        }
+                    }
+                    break;
+                } catch (Exception ignored) {}
+            }
+        }
+    }
+
+    // Copy a file from the source path to the destination path
+    private static void copyFile(String sourcePath, String destinationPath) {
+        try (final InputStream in = Files.newInputStream(Paths.get(sourcePath));
+             final OutputStream out = Files.newOutputStream(Paths.get(destinationPath))) {
+            final byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            LOGGER.error("Error while saving file", e);
         }
     }
 }
