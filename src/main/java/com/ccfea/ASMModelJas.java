@@ -19,7 +19,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -28,7 +31,8 @@ import java.util.*;
 public class ASMModelJas extends SimModel implements IDoubleSource {
     private static Logger LOGGER = LoggerFactory.getLogger(ASMModelJas.class);
     private static final String TRADE_DATA_FILE = "trade_data.csv";
-    private static final String AGENT_DATA_FILE = "agent_data.csv";
+    private static final String AGENT_DATA_WEALTH_FILE = "agent_wealth_data.csv";
+    private static final String AGENT_DATA_RETRAINING_FILE = "agent_retraining_data.csv";
     public static final int MARKET_PRICE = 0;
     public static final int RATIONAL_EXPECTATIONS = 1;
     public static final int RISK_NEUTRAL = 2;
@@ -47,25 +51,30 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
     public Graph graph;
     private GraphViewer graphViewer;
     private CSVFileService tradeDataFileService;
-    private CSVFileService agentDataFileService;
+    private CSVFileService agentDataWealthFileService;
+    private CSVFileService agentDataRetrainingFileService;
 
     public ASMModelJas() {
         // Add file header for Trade Data
         final List<String> tradeDataHeaders = Arrays.asList("Model Time", "Price", "Average Wealth", "Median Wealth", "Min Wealth", "Max Wealth");
 
         // Add file header for agent Data
-        final List<String> agentDataHeaders = new ArrayList<>();
-        agentDataHeaders.add("Model Time");
+        final List<String> agentDataWealthHeaders = new ArrayList<>();
+        final List<String> agentDataRetrainingHeaders = new ArrayList<>();
+
+        agentDataWealthHeaders.add("Model Time");
+        agentDataRetrainingHeaders.add("Model Time");
 
         for (int i = 0; i < getNumBFagents(); i++) {
             final int agentID = i + 1;
-            agentDataHeaders.add(String.format("Agent %d wealth", agentID));
-            agentDataHeaders.add(String.format("Agent %d retraining", agentID));
+            agentDataWealthHeaders.add(String.format("Agent %d wealth", agentID));
+            agentDataRetrainingHeaders.add(String.format("Agent %d retraining", agentID));
         }
 
         try {
             this.tradeDataFileService = new CSVFileService(tradeDataHeaders, TRADE_DATA_FILE);
-            this.agentDataFileService = new CSVFileService(agentDataHeaders, AGENT_DATA_FILE);
+            this.agentDataWealthFileService = new CSVFileService(agentDataWealthHeaders, AGENT_DATA_WEALTH_FILE);
+            this.agentDataRetrainingFileService = new CSVFileService(agentDataRetrainingHeaders, AGENT_DATA_RETRAINING_FILE);
         } catch (IOException exp) {
             LOGGER.error("Error creating data files", exp);
         }
@@ -217,7 +226,7 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
             // Collect.
             this.eventList.scheduleSimple(0L, 1, this, "appendData");
             // Batch.
-            this.eventList.scheduleSimple(0L, 1000, this, "saveData");
+            this.eventList.scheduleSimple(0L, 200, this, "saveData");
         }
         this.eventList.scheduleSimple(0L, 1, this, "agentColor");
         this.eventList.scheduleSimple(0L, 1, this.graphViewer, 10003);
@@ -313,16 +322,20 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
                     String.valueOf(this.wealth.maxWealth())
             );
 
-            final List<String> agentDataRow = new ArrayList<>();
-            agentDataRow.add(String.valueOf(this.modelTime));
+            final List<String> agentDataWealthRow = new ArrayList<>();
+            final List<String> agentDataRetrainRow = new ArrayList<>();
+
+            agentDataWealthRow.add(String.valueOf(this.modelTime));
+            agentDataRetrainRow.add(String.valueOf(this.modelTime));
 
             for (Object o : agentList) {
-                agentDataRow.add(String.valueOf(((BFagent) o).getWealth()));
-                agentDataRow.add(String.valueOf(((BFagent) o).retrainig));
+                agentDataWealthRow.add(String.valueOf(((BFagent) o).getWealth()));
+                agentDataRetrainRow.add(String.valueOf(((BFagent) o).retrainig));
             }
 
             tradeDataFileService.appendToFile(tradeDataRow);
-            agentDataFileService.appendToFile(agentDataRow);
+            agentDataWealthFileService.appendToFile(agentDataWealthRow);
+            agentDataRetrainingFileService.appendToFile(agentDataRetrainRow);
         } catch (IndexOutOfBoundsException exp) {
             LOGGER.error("Failed to get agent object {}", exp.getLocalizedMessage());
         }
@@ -330,7 +343,8 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
 
     public void saveData() {
         tradeDataFileService.saveToFile();
-        agentDataFileService.saveToFile();
+        agentDataWealthFileService.saveToFile();
+        agentDataRetrainingFileService.saveToFile();
     }
 
     private void addDownloadDataMenu() {
@@ -350,40 +364,50 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
                             menuBar.add(fileMenu);
 
                             final JMenuItem menuItemDownloadTrade = new JMenuItem("Download Trade Data");
-                            final JMenuItem menuItemDownloadAgent = new JMenuItem("Download Agent Data");
+                            final JMenuItem menuItemDownloadWealthAgent = new JMenuItem("Download Agent Wealth Data");
+                            final JMenuItem menuItemDownloadRetrainAgent = new JMenuItem("Download Agent Retrain Data");
 
                             fileMenu.add(menuItemDownloadTrade);
-                            fileMenu.add(menuItemDownloadAgent);
+                            fileMenu.add(menuItemDownloadWealthAgent);
+                            fileMenu.add(menuItemDownloadRetrainAgent);
                             rootPane.setJMenuBar(menuBar);
 
                             menuItemDownloadTrade.addActionListener(ev -> {
                                 final FileDialog destinationDialog = new FileDialog(new Frame("Save trade data file to destination"), "Save trade data file to destination", FileDialog.SAVE);
                                 destinationDialog.setFile(TRADE_DATA_FILE);
                                 destinationDialog.setVisible(true);
-
                                 final String sourceFilePath = tradeDataFileService.getCSVFilePath().toString();
                                 final String destinationFilePath = destinationDialog.getDirectory() + destinationDialog.getFile();
                                 copyFile(sourceFilePath, destinationFilePath);
                             });
 
-                            menuItemDownloadAgent.addActionListener(ev -> {
-                                final FileDialog destinationDialog = new FileDialog(new Frame("Save agent data file to destination"), "Save trade data file to destination", FileDialog.SAVE);
-                                destinationDialog.setFile(AGENT_DATA_FILE);
+                            menuItemDownloadWealthAgent.addActionListener(ev -> {
+                                final FileDialog destinationDialog = new FileDialog(new Frame("Save agent wealth data file to destination"), "Save agent wealth data file to destination", FileDialog.SAVE);
+                                destinationDialog.setFile(AGENT_DATA_WEALTH_FILE);
                                 destinationDialog.setVisible(true);
-
-                                final String sourceFilePath = agentDataFileService.getCSVFilePath().toString();
+                                final String sourceFilePath = agentDataWealthFileService.getCSVFilePath().toString();
                                 final String destinationFilePath = destinationDialog.getDirectory() + destinationDialog.getFile();
                                 copyFile(sourceFilePath, destinationFilePath);
                             });
 
+                            menuItemDownloadRetrainAgent.addActionListener(ev -> {
+                                final FileDialog destinationDialog = new FileDialog(new Frame("Save agent retrain data file to destination"), "Save agent retrain data file to destination", FileDialog.SAVE);
+                                destinationDialog.setFile(AGENT_DATA_RETRAINING_FILE);
+                                destinationDialog.setVisible(true);
+                                final String sourceFilePath = agentDataRetrainingFileService.getCSVFilePath().toString();
+                                final String destinationFilePath = destinationDialog.getDirectory() + destinationDialog.getFile();
+                                copyFile(sourceFilePath, destinationFilePath);
+                            });
                             break;
                         }
                     }
                     break;
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }
     }
+
 
     // Copy a file from the source path to the destination path
     private static void copyFile(String sourcePath, String destinationPath) {
