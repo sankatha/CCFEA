@@ -225,8 +225,6 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         if (ASMModelParams.batch) {
             // Collect.
             this.eventList.scheduleSimple(0L, 1, this, "appendData");
-            // Batch.
-            this.eventList.scheduleSimple(0L, 200, this, "saveData");
         }
         this.eventList.scheduleSimple(0L, 1, this, "agentColor");
         this.eventList.scheduleSimple(0L, 1, this.graphViewer, 10003);
@@ -341,12 +339,6 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
         }
     }
 
-    public void saveData() {
-        tradeDataFileService.saveToFile();
-        agentDataWealthFileService.saveToFile();
-        agentDataRetrainingFileService.saveToFile();
-    }
-
     private void addDownloadDataMenu() {
         final IWindowManager windowManager = Sim.engine.getWindowManager();
         final SimWindow[] simWindows = windowManager.getSimWindows();
@@ -376,7 +368,7 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
                                 final FileDialog destinationDialog = new FileDialog(new Frame("Save trade data file to destination"), "Save trade data file to destination", FileDialog.SAVE);
                                 destinationDialog.setFile(TRADE_DATA_FILE);
                                 destinationDialog.setVisible(true);
-                                final String sourceFilePath = tradeDataFileService.getCSVFilePath().toString();
+                                final String sourceFilePath = tradeDataFileService.getTempCSVFilePath().toString();
                                 final String destinationFilePath = destinationDialog.getDirectory() + destinationDialog.getFile();
                                 copyFile(sourceFilePath, destinationFilePath);
                             });
@@ -385,7 +377,7 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
                                 final FileDialog destinationDialog = new FileDialog(new Frame("Save agent wealth data file to destination"), "Save agent wealth data file to destination", FileDialog.SAVE);
                                 destinationDialog.setFile(AGENT_DATA_WEALTH_FILE);
                                 destinationDialog.setVisible(true);
-                                final String sourceFilePath = agentDataWealthFileService.getCSVFilePath().toString();
+                                final String sourceFilePath = agentDataWealthFileService.getTempCSVFilePath().toString();
                                 final String destinationFilePath = destinationDialog.getDirectory() + destinationDialog.getFile();
                                 copyFile(sourceFilePath, destinationFilePath);
                             });
@@ -394,7 +386,7 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
                                 final FileDialog destinationDialog = new FileDialog(new Frame("Save agent retrain data file to destination"), "Save agent retrain data file to destination", FileDialog.SAVE);
                                 destinationDialog.setFile(AGENT_DATA_RETRAINING_FILE);
                                 destinationDialog.setVisible(true);
-                                final String sourceFilePath = agentDataRetrainingFileService.getCSVFilePath().toString();
+                                final String sourceFilePath = agentDataRetrainingFileService.getTempCSVFilePath().toString();
                                 final String destinationFilePath = destinationDialog.getDirectory() + destinationDialog.getFile();
                                 copyFile(sourceFilePath, destinationFilePath);
                             });
@@ -407,7 +399,6 @@ public class ASMModelJas extends SimModel implements IDoubleSource {
             }
         }
     }
-
 
     // Copy a file from the source path to the destination path
     private static void copyFile(String sourcePath, String destinationPath) {
