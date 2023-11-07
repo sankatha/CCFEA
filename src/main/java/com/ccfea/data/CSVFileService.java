@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CSVFileService {
     private static final int SAVE_SCHEDULE_SECONDS = 5;
-    private static final int TIMEOUT_SECONDS = 10;
+    private static final int TIMEOUT_SECONDS = 15;
     private static final Logger LOGGER = LoggerFactory.getLogger(CSVFileService.class);
     private final String csvFile;
     private final List<List<String>> dataBuffer;
