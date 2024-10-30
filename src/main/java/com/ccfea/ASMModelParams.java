@@ -4,7 +4,6 @@
 package com.ccfea;
 
 public class ASMModelParams {
-
    public static int numBFagents = 100;
    public static float initholding = 1.0F;
    public static double initialcash = 20000.0D;
@@ -38,6 +37,4 @@ public class ASMModelParams {
    public static boolean RedQueen = true;
    public static boolean batch = false;
    public static int numOfIterations = 100000;
-
-
 }
